@@ -1,0 +1,167 @@
+{% extends 'default/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block title %} Post {% endblock title %}
+{% block head %}
+<style>
+/* Set height of body and the document to 100% to enable "full page tabs" */
+body, html {
+  height: 100%;
+  margin: 0;
+}
+
+/* Style tab links */
+.tablink {
+  background-color: white;
+  border:2px solid black;
+  color: red;
+  float: left;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  font-size: 17px;
+  width: 25%;
+}
+
+.tablink:hover {
+  background-color: #777;
+}
+
+/* Style the tab content (and add height:100% for full page content) */
+.tabcontent {
+  color: white;
+  display: none;
+  padding: 80px 20px;
+  height: 100%;
+}
+
+
+</style>
+{% endblock head %}
+{% block main %}
+   <div class="container">
+      <div class="row">
+        <!-- Latest Posts -->
+        <main class="post blog-post col-lg-4"> 
+          <div class="container text-center">
+            <div class="card" style="width: 18rem;">
+            <img src="{{author.profile_pic.url}}" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">{{ author.author.first_name}} {{ author.author.last_name}}</h5>
+                <p class="card-text">{{author.author.email}}</p>
+           </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item ">Username   |   {{author.author.username}}</li>
+                <li class="list-group-item">Date of Birth   |   {{author.birth_date}}</li>
+                <li class="list-group-item">Gender  |   {{author.gender}}</li>
+                <li class="list-group-item">Contect No.  |   {{author.contect_no}}</li>
+            </ul>
+            </div>
+            </div>
+            
+        </main> 
+        <main class="post blog-post col-lg-8"> 
+        <div class="container">
+        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">My Articles</a>
+            </li>
+            <li class="nav-item" role="presentation">
+              <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Update Profile</a>
+            </li>
+            <li class="nav-item" role="presentation">
+              <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">Settings</a>
+            </li>
+          </ul>
+          <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+            <ul class="list-unstyled">
+              {% for article in articles %}
+              <li class="media my-4">
+                <a href="{{article.get_absolute_url}}"><img src="{{article.image.url}}" class="mr-3" height="60" width="60" alt="..."></a>
+                <div class="media-body">
+                  <h5 class="mt-0 mb-1"><a href="{{article.get_absolute_url}}" style="color:black;">{{ article.title}}</a></h5>
+                  {{ article.overview}}
+                </div>
+              </li>
+              {% endfor %}
+              </ul>
+            </div>
+            <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+              <form action="{% url 'author-profile' request.user.username %}" method="POST" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  {{ user | crispy }}
+                  {{ profile | crispy }}
+                  <button type="submit" class="btn btn-primary">Save</button>
+              </form>
+            </div>
+            <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+            
+            <div class="accordion" id="accordionExample">
+              <div class="card">
+                <div class="card-header" id="headingOne">
+                  <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                      Change Password
+                    </button>
+                  </h2>
+                </div>
+
+                <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                  <div class="card-body">
+                    <form action="{% url 'author-profile' request.user.username %}" method="POST">
+                      {% csrf_token %}
+                      {{ password | crispy }}
+                  
+                      <button type="submit" class="btn btn-primary">Save</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header" id="headingTwo">
+                  <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                      Change Email
+                    </button>
+                  </h2>
+                </div>
+                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                  <div class="card-body">
+                    <p><a href="{% url 'account_email' %}">Click here to change the email</a></p>
+                 </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header" id="headingThree">
+                  <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                      Delete Your Account
+                    </button>
+                  </h2>
+                </div>
+                <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                  <div class="card-body">
+                    <p><h4><center> Do you want to delete your account permanently ? </center></h4></p>
+            <form  method="POST" action="{% url 'author-delete' author.id %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                   <div class="row">
+                   <div class="col-12 text-center">
+                    <button class="btn btn-primary" type="submit">Delete</button>
+                    </div>
+                    </div>
+               
+            </form>
+                    </div>
+                </div>
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
+        </main>
+      </div>
+    </div>
+{% endblock main %}
+
+

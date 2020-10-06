@@ -1,0 +1,5 @@
+env
+data/
+*.cpython*
+*initial*
+db.sqlite3
